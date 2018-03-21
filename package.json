@@ -1,0 +1,25 @@
+{
+  "name": "flapweb-sso-web",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "node_modules\\.bin\\webpack",
+    "start": "node_modules\\.bin\\webpack-dev-server --open",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "css-loader": "^0.28.9",
+    "raw-loader": "^0.5.1",
+    "style-loader": "^0.20.1",
+    "webpack": "^3.11.0",
+    "webpack-dev-server": "^2.11.1"
+  },
+  "dependencies": {
+    "ejs": "^2.5.7",
+    "papercss": "^1.4.1"
+  }
+}
