@@ -4,14 +4,25 @@ import './template.js';
 
 import registerHTML from './templates/register.html';
 import loginHTML from './templates/login.html';
+import successHTML from './templates/success.html';
+import errorHTML from './templates/error.html';
 
+ 
+
+var host;
+if (window.location.hostname === 'localhost') {
+    host = 'http://localhost:8080';
+    window.location.hash = ''; 
+} else {
+    host = '';
+}
 
 /*
  * routing
  */
 const content = document.getElementById('content');
 content.innerHTML = loginHTML;
-window.location.hash = ''; //only in development
+
 
 window.onhashchange = function(){
     const newHash = window.location.hash.substr(1);
@@ -35,29 +46,55 @@ window.onhashchange = function(){
  */
 function addRegisterListeners(){
 
-    var registrationForm = document.getElementById('registration-form');
-    var usernameInput = document.getElementById('username');
-    var emailInput = document.getElementById('email');
-    var passwordInput = document.getElementById('password');
-    var confirmPasswordInput = document.getElementById('confirm-password');
+    const registrationForm = document.getElementById('registration-form');
+    const usernameInput = document.getElementById('username');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirm-password');
+    const statusBar = document.getElementById('status-bar');
 
     confirmPasswordInput.addEventListener('input', event => {
         if (passwordInput.value !== confirmPasswordInput.value) {
-            confirmPasswordInput.setCustomValidity('Passwords Don\'t Match');
+            confirmPasswordInput.setCustomValidity('Passwords don\'t Match');
         } else {
             confirmPasswordInput.setCustomValidity('');
         }
     });
 
     registrationForm.addEventListener('submit', event => {
-        
-        let data = {
-            username : usernameInput.value,
-            email : emailInput.value,
-            password : passwordInput.value
-        }
-        console.log('going to post');
-        console.log(data);
+        statusBar.removeAttribute('style');
+        var httpRequest = new XMLHttpRequest();
+        httpRequest.onreadystatechange = function(){
+            if (httpRequest.readyState === XMLHttpRequest.DONE) {
+                console.log(httpRequest.status);
+                console.log(httpRequest.responseText);
+
+                switch(httpRequest.status){
+                    case 201 : 
+                        console.log('user succesfully created');
+                        statusBar.innerHTML = successHTML;
+                        statusBar.style.opacity = 1;
+                        break;
+                    case 400 :
+                        console.log('bad request');
+                        statusBar.innerHTML = '';
+                        JSON.parse(httpRequest.responseText).errors.forEach(errorMsg => {
+                            statusBar.innerHTML += errorHTML.replace('##error##',errorMsg);
+                        });
+                        statusBar.style.opacity = 1;
+                        break;
+                    case 500 :
+                        console.log('ooops');
+                        break;
+                    default :
+                        console.log('ooops 2');
+                }
+
+            }
+        };
+        httpRequest.open('POST', `${host}/auth/register`);
+        httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        httpRequest.send(`username=${usernameInput.value}&email_address=${emailInput.value}&password=${passwordInput.value}`);
     });
 
 };

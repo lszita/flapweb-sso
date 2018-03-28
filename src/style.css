@@ -7,3 +7,9 @@ html, body, .container {
    align-items: center;
    justify-content: center; 
 }
+
+#status-bar {
+    opacity: 0;
+    transition: opacity 1s linear;
+    -moz-transition: opacity 1s linear;
+}
